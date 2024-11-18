@@ -318,5 +318,31 @@ const Bottle = function (r, h, seg, sc, colors) {
 
   const geometryLabel = new THREE.CylinderGeometry(r,r,h*.4,seg,seg,0,Pi/4);
   const label = new THREE.Mesh(geometryLabel, materialLabel);
+  label.position.y += h/10;
+  this.mesh.add(neck); 
+
+  const geometryNeck = new THREE.CylinderGeometry(r/3, r, h*.6, seg, seg);
+  const neck = new THREE.Mesh(geometryNeck, materialLiquid);
+  neck.position.y+= h* .8;
+  this.mesh.add(neck);
   
+  const geometryCap = new THREE.CylinderGeometry(r*.4, r*.4, 3*h/20,seg,seg);
+  const cap = new THREE.Mesh(geometryCap, materialLabel);
+  cap.position.y+=h*.8;
+  this.mesh.add(cap);
+  this.mesh.castShadow = true;
+  this.mesh.receiveShadow = true
+  this.mesh.scale.set(sc,sc,sc);
+}
+
+const Can = function(r,h,seg,colors){
+  this.mesh = new THREE.Object3D();
+  const type = Math.floor(Math.random() * 3);
+  const materialLiquid = new THREE.MeshPhongMaterial({color: colors[2*(type)], transparent: true, opacity: .6,flatShading:true});
+  const materialLabel = new THREE.MeshPhongMaterial({color: colors[2*(type)+1], transparent:true, opacity:.7,flatShading:true});
+  const geometryBody = new THREE.CylinderGeometry(r,r,h,seg,seg);
+  this.mesh.add(body);
+
+  const geometryLabel = new THREE.CylinderGeometry(r,r,h*.4,seg,seg,0,Pi/4);
+  const label = new THREE.
 }
