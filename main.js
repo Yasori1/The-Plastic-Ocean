@@ -307,42 +307,133 @@ const Bottle = function (r, h, seg, sc, colors) {
     flatShading: true,
   })
   const materialLabel = new THREE.MeshPhongMaterial({
-    color: colors[2*(type)+1],
-    transparent:true,
-    opacity:.7,
-    flatShading:true
+    color: colors[2 * type + 1],
+    transparent: true,
+    opacity: 0.7,
+    flatShading: true,
   })
-  const geometryBody = new THREE.CylinderGeometry(r,r,h,seg,seg);
-  const body = new THREE.Mesh(geometryBody,materialLiquid);
-  this.mesh.add(body);
+  const geometryBody = new THREE.CylinderGeometry(r, r, h, seg, seg)
+  const body = new THREE.Mesh(geometryBody, materialLiquid)
+  this.mesh.add(body)
 
-  const geometryLabel = new THREE.CylinderGeometry(r,r,h*.4,seg,seg,0,Pi/4);
-  const label = new THREE.Mesh(geometryLabel, materialLabel);
-  label.position.y += h/10;
-  this.mesh.add(neck); 
+  const geometryLabel = new THREE.CylinderGeometry(
+    r,
+    r,
+    h * 0.4,
+    seg,
+    seg,
+    0,
+    Pi / 4,
+  )
+  const label = new THREE.Mesh(geometryLabel, materialLabel)
+  label.position.y += h / 10
+  this.mesh.add(neck)
 
-  const geometryNeck = new THREE.CylinderGeometry(r/3, r, h*.6, seg, seg);
-  const neck = new THREE.Mesh(geometryNeck, materialLiquid);
-  neck.position.y+= h* .8;
-  this.mesh.add(neck);
-  
-  const geometryCap = new THREE.CylinderGeometry(r*.4, r*.4, 3*h/20,seg,seg);
-  const cap = new THREE.Mesh(geometryCap, materialLabel);
-  cap.position.y+=h*.8;
-  this.mesh.add(cap);
-  this.mesh.castShadow = true;
+  const geometryNeck = new THREE.CylinderGeometry(r / 3, r, h * 0.6, seg, seg)
+  const neck = new THREE.Mesh(geometryNeck, materialLiquid)
+  neck.position.y += h * 0.8
+  this.mesh.add(neck)
+
+  const geometryCap = new THREE.CylinderGeometry(
+    r * 0.4,
+    r * 0.4,
+    (3 * h) / 20,
+    seg,
+    seg,
+  )
+  const cap = new THREE.Mesh(geometryCap, materialLabel)
+  cap.position.y += h * 0.8
+  this.mesh.add(cap)
+  this.mesh.castShadow = true
   this.mesh.receiveShadow = true
-  this.mesh.scale.set(sc,sc,sc);
+  this.mesh.scale.set(sc, sc, sc)
 }
 
-const Can = function(r,h,seg,colors){
+const Can = function (r, h, seg, colors) {
+  this.mesh = new THREE.Object3D()
+  const type = Math.floor(Math.random() * 3)
+  const materialLiquid = new THREE.MeshPhongMaterial({
+    color: colors[2 * type],
+    transparent: true,
+    opacity: 0.6,
+    flatShading: true,
+  })
+  const materialLabel = new THREE.MeshPhongMaterial({
+    color: colors[2 * type + 1],
+    transparent: true,
+    opacity: 0.7,
+    flatShading: true,
+  })
+  const geometryBody = new THREE.CylinderGeometry(r, r, h, seg, seg)
+  this.mesh.add(body)
+
+  const geometryLabel = new THREE.CylinderGeometry(
+    r,
+    r,
+    h * 0.7,
+    seg,
+    seg,
+    0,
+    Pi / 4,
+  )
+  const label = new THREE.Mesh(geometryLabel, materialLabel)
+  label.position.y += h / 40
+  this.mesh.add(label)
+
+  const geometryCap = new THREE.CylinderGeometry(r * 0.9, r, h / 20, seg, seg)
+  const topCap = new THREE.Mesh(geometryCap,materialLiquid)
+  topCap.position.y+=h*.525;
+  this.mesh.add(topCap);
+
+  const bottomCap = new THREE.Mesh(geometryCap,materialLiquid)
+  bottomCap.rotation.x+=Pi;
+  bottomCap.position.y-=h*.525;
+  this.mesh.add(bottomCap);
+
+  this.mesh.castShadow = true;
+  this.mesh.receiveShadow = true;
+}
+
+const Tire = function(iR,oR,rS,tS,sc){
   this.mesh = new THREE.Object3D();
-  const type = Math.floor(Math.random() * 3);
-  const materialLiquid = new THREE.MeshPhongMaterial({color: colors[2*(type)], transparent: true, opacity: .6,flatShading:true});
-  const materialLabel = new THREE.MeshPhongMaterial({color: colors[2*(type)+1], transparent:true, opacity:.7,flatShading:true});
-  const geometryBody = new THREE.CylinderGeometry(r,r,h,seg,seg);
-  this.mesh.add(body);
+  const materialBody = new THREE.MeshPhongMaterial({
+    color:0x080808,
+    flatShading: true
+  })
+  const geomBody = new THREE.TorusGeometry(iR,oR,rS,tS);
+  geometryPattern.openEnded = true;
 
-  const geometryLabel = new THREE.CylinderGeometry(r,r,h*.4,seg,seg,0,Pi/4);
-  const label = new THREE.
+  for (let i=0; i<16; i++){
+    const pattern = new THREE.Mesh(geometryPattern,materialPattern);
+    pattern.rotation.z+=i*Pi/8;
+    this.mesh.add(pattern);
+  }
+  this.displX=0;
+  this.displY=0;
+  this.mesh.castShadow = true;
+  this.mesh.receiveShadow = true;
+  this.mesh.scale.set(sc,sc,sc);
+  this.mesh.add(body);
 }
+
+TrashHolder = function(){
+  this.mesh = new THREE.Object3D();
+  this.elements = [];
+}
+TrashHolder.prototype.spawnTrash = function(d,z,n){
+  for(let i=0; i<n; i++){
+    const trash = new Tire(shapes.tire.innerR,shapes.tire.outerR,shapes.tire.rSegments,shapes.tire.tSegments,1);
+    trash.angle = 2*Pi*i/n-Math.random()*.3;
+    trash.angleCopy = trash.angle;
+    trash.distance = d+ 50 + Math.random()*50;
+    trash.offset = Math.random()*350;
+    trash.mesh.rotation.y = Math.random()*Pi;
+    trash.mesh.position.z = Math.random()*Pi;
+    trash.mesh.position.z=z;
+    trash.position.y=trash.offset-shapes.seabed.height + Math.sin(trash.angle)*trash.distance;
+    trash.mesh.position.x=Math.cos(trash.angle)* trash.distance;
+    this.mesh.add(trash.mesh);
+    this.elements.push(trash);
+  }
+}
+
